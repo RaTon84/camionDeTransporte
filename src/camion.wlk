@@ -6,7 +6,6 @@ object camion {
 	const pesoMaximo=2500;
 	/*para manejar qué tiene. */
 	method cargar(cosa){
-		cosa.cargar();
 		cosas.add(cosa);
 		cosas.last().cargar()
 	}
