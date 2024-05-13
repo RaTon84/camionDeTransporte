@@ -1,0 +1,218 @@
+--------------usar variable o los kg------------------------
+
+/* indica si el peso total es superior al peso máximo, que es de 2500 kilos. */
+	method excedidoDePeso(){
+		return self.pesoTotal()>pesoMaximo;
+
+method excedidoDePeso()= self.pesoTotal()>2500
+
+--------------3 formas dsitintas que cumnplen cual es mas objetuosa?-------------------------
+
+/*Puede circular si no está excedido de peso, y además, ninguno de los objetos cargados supera el nivel máximo de peligrosidad indicado.*/
+	method puedeCircularEnRuta(nivelMaximoPeligrosidad){
+		return !self.excedidoDePeso() && self.objetosQueSuperanPeligrosidad(nivelMaximoPeligrosidad).isEmpty()
+
+method puedeCircularEnRuta(nivelMaximoPeligrosidad)= not self.excedidoDePeso() and cargaCamion.all({objeto=>objeto.nivelPeligrosidad()<nivelMaximoPeligrosidad})
+
+method puedeCircularEnRuta(nivelMaximoPeligrosidad){
+		var superaElNivelMaximo = cargaCamion.any({mensaje => nivelMaximoPeligrosidad > mensaje.nivelDePeligrosidad()})
+		return not self.excedidoDePeso() && not superaElNivelMaximo
+	}
+
+---------usamos una variable para la tara ? -------
+
+method pesoTotal(){
+		return cargaCamion.map({mensaje => mensaje.peso()}).sum() + 1000
+	}
+
+const taraDelCamion=1000
+
+--------------2 formas distintas no influyen------------------
+
+/*para manejar qué tiene. */
+	method cargar(cosa){
+		cosas.add(cosa);
+		cosas.last().cargar()
+	}
+
+
+method cargar(cosa){
+		cargaCamion.add(cosa)
+		cargaCamion.map({objeto=>objeto.transformar()})
+		}
+
+
+--------------variable boolean 1 o 2--------------------------------
+
+object bumblebee {
+	var esRobot=true
+	var esAuto=false
+
+
+	method modoRobot(){
+		esRobot=true
+		esAuto=false
+	}
+	method modoAuto(){
+		esAuto=true
+		esRobot=false
+	}
+
+	method peso()=800
+	method nivelPeligrosidad(){return if (esAuto){15} else{30}}
+	method bultos()=2
+	method transformar(){self.modoRobot()}
+}
+
+
+object bumblebee {
+	var property estaTransformadoEnAuto = true;
+	method peso()=800;
+	method nivel()=if(estaTransformadoEnAuto)15 else 30;
+	method bulto()=2;
+	method cargar()=self.estaTransformadoEnAuto(false);
+}
+
+---------variable peso del ladrillo-------------------
+
+object paqueteLadrillos{
+	const pesoLadrillo=2;
+	var property cantidad=100;
+	method peso()=pesoLadrillo*cantidad;
+	method nivel()=2;
+	method bulto()=
+	return if(cantidad<=100) 1
+		else if(cantidad.between(101,300)) 2
+		else 3;
+	method cargar(){cantidad+=12};		
+}
+
+
+object paqueteLadrillos{
+	var cantidadDeLadrillos=0
+	method agregarDeLadrillos(unValor){cantidadDeLadrillos+=unValor}
+
+	method peso()=2*cantidadDeLadrillos
+	method nivelPeligrosidad()=2
+	method bultos(){ return if (cantidadDeLadrillos<=100){1}else if(cantidadDeLadrillos.between(101,300)){2}else{3}}
+	method transformar(){self.agregarDeLadrillos(12)}
+}
+
+
+--------------agrega--------------------------------
+///arena a granel: agrega 20 kilos;
+
+object arena {
+	var property peso=20;
+	method nivel()=1;
+	method bulto()=1;
+	method cargar(){peso+=20};
+}
+
+object arena {
+	var property peso
+	method nivelPeligrosidad()=1
+	method bultos()=1
+	method transformar(){self.peso(20)}
+}
+
+
+
+-------------el cargar misiles se debe poder modificar usamos property?--------------------------------------------
+
+
+object bateriaAntiarea {
+	var property estaConMisiles=false;
+	method peso()=if(estaConMisiles)300 else 200;
+	method nivel()=if(estaConMisiles)100 else 0;
+	method bulto()=if(estaConMisiles)2 else 1;
+	method cargar(){estaConMisiles=true};
+}
+object bateriaAntiarea {
+	var tieneMisiles=false
+	method cargarMisiles(){tieneMisiles=true}
+	method tieneMisiles()=tieneMisiles
+
+	method peso(){return if (tieneMisiles){300}else{200}}
+	method nivelPeligrosidad(){return if (tieneMisiles){100}else{0}}
+	method bultos(){return if (tieneMisiles){2}else{1}}
+	method transformar(){self.cargarMisiles()}
+}
+
+
+----------------metodo cargar o transformar, el uso del map o solo sum en peso y nivel-----------------------------------------
+object contenedor {
+	const objetos=[knightRider]
+
+	method addObject(unObjeto)= objetos.add(unObjeto)
+	method removeObject(unObjeto)= objetos.remove(unObjeto)
+
+	method peso()= objetos.sum({objeto=>objeto.peso()})+100
+	method nivelPeligrosidad(){ return if(objetos.isEmpty()){0}else{objetos.max({objeto=>objeto.nivelPeligrosidad()})}}
+	method bultos()=objetos.sum({objeto=>objeto.bultos()})+1
+	method transformar(){objetos.transformar()}
+}
+
+object contenedor {
+	const peso=100;
+	var cosas=[arena,bumblebee];
+	method agregarCosa(cosa)=cosas.add(cosa);
+	method cosas()= cosas;
+	method peso()=peso+cosas.sum({c=>c.peso()});
+	method nivel()=if(cosas.isEmpty()) 0 else cosas.max({c=>c.nivel()});
+	method bulto()=1+cosas.sum({s=>s.bulto()});
+	method cargar(){cosas.map({c=>c.cargar()})};
+}
+
+object contenedor {
+	var contenedor = []
+	var peso = 100  
+	var nivelDePeligrosidad = 0
+	method agregarAContenedor(objeto){
+		contenedor.add(objeto)
+	}
+	method pesoDeObjetosDelContenedor(){
+		return contenedor.map({mensaje => mensaje.peso()}).sum()
+		}
+	method peso() = return peso + self.pesoDeObjetosDelContenedor()
+	method nivelDePeligrosidad(){
+		 if(contenedor.isEmpty()){return  0}else{ return contenedor.map({mensaje => mensaje.nivelDePeligrosidad()}).max()}}
+}
+
+------------el metodo cargar/transformar se agrega igual que la arena ?---------------------------------
+
+object residuosRadioactivos {
+	var property peso=500;
+	method nivel()=200;
+	method bulto()=1;
+	method cargar(){peso+=15};
+}
+
+object residuosRadioactivos {
+	var property peso
+	method nivelPeligrosidad()=200
+	method bultos()=1
+	method transformar(){self.peso(15)}
+}
+
+---------------hace falta el metodo transformar o cargar?--------------------------
+
+object embalajeSeguridad {
+	var cosaSegura;
+	method envolverCosa(cosa){
+		cosaSegura=cosa;
+	}
+	method peso()=cosaSegura.peso();
+	method nivel()=cosaSegura.nivel()/2;
+	method bulto()=2;
+	method cargar(){};
+}
+object embalajeSeguridad {
+	var objeto=knightRider
+	method setObjeto(unObjeto){objeto=unObjeto}
+
+	method peso()=objeto.peso()
+	method nivelPeligrosidad()=objeto.nivelPeligrosidad()*0.5
+	method bultos()=2
+
+}
