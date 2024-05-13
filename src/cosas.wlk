@@ -16,12 +16,12 @@ object bumblebee {
 
 object paqueteLadrillos{
 	const pesoLadrillo=2;
-	var property cantidad=100;
+	var property cantidad=0;
 	method peso()=pesoLadrillo*cantidad;
 	method nivel()=2;
 	method bulto()=
 	return if(cantidad<=100) 1
-		else if(cantidad>100&&cantidad<=300) 2
+		else if(cantidad.between(101,300)) 2
 		else 3;
 	method cargar(){cantidad+=12};		
 }
@@ -44,7 +44,7 @@ object bateriaAntiarea {
 
 object contenedor {
 	const peso=100;
-	var cosas=[arena,bumblebee];
+	var cosas=[];
 	method agregarCosa(cosa)=cosas.add(cosa);
 	method cosas()= cosas;
 	method peso()=peso+cosas.sum({c=>c.peso()});
@@ -66,7 +66,7 @@ object embalajeSeguridad {
 		cosaSegura=cosa;
 	}
 	method peso()=cosaSegura.peso();
-	method nivel()=cosaSegura.nivel();
+	method nivel()=cosaSegura.nivel()/2;
 	method bulto()=2;
 	method cargar(){};
 }

@@ -1,2 +1,28 @@
 import camion.*
 import cosas.*
+
+test "bumblebee como robot"{
+	camion.cargar(bumblebee);
+	assert.notThat(bumblebee.estaTransformadoEnAuto());
+}
+
+test "la arena a granel con 150 kilos"{
+	arena.peso(130);
+	camion.cargar(arena);
+	assert.equals(arena.peso(),150);
+}
+
+test " la batería antiaérea con los misiles puestos"{
+	camion.cargar(bateriaAntiarea);
+	assert.that(bateriaAntiarea.estaConMisiles());
+	assert.equals(bateriaAntiarea.peso(),300);
+}
+
+test "el embalaje de seguridad poniéndole como contenido
+ el paquete de ladrillos con 80 ladrillos"{
+ 	paqueteLadrillos.cantidad(80); 	
+ 	embalajeSeguridad.envolverCosa(paqueteLadrillos);
+ 	camion.cargar(embalajeSeguridad)
+ 	assert.equals(embalajeSeguridad.peso(),160);
+ 	
+ }

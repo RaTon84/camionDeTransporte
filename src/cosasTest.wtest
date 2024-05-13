@@ -1,2 +1,16 @@
 import camion.*
 import cosas.*
+
+test "Al embalaje ponerle adentro los residuos radioactivos con 30 kg de pes" {
+	residuosRadioactivos.peso(30);
+	embalajeSeguridad.envolverCosa(residuosRadioactivos);
+	assert.that(30==embalajeSeguridad.peso());
+}
+
+test "Al contenedor, dos o tres cosas a elección"{
+	contenedor.agregarCosa(residuosRadioactivos);
+	contenedor.agregarCosa(bumblebee);
+	contenedor.agregarCosa(paqueteLadrillos);
+	assert.equals(contenedor.cosas().size(),3);		
+}
+
